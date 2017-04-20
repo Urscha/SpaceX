@@ -48,7 +48,6 @@ for i in data:
         score -= i[3]
         print "could not pack ", i[0]
 
-
 # print leftover space in spaceships and score
 for i in ships:
     print i[0], "\t kg: ", i[1], "\t m3: ", i[2] , "\n"
