@@ -4,7 +4,7 @@ from operator import itemgetter
 
 #                       _____FUNCTIONS_____
 
-# read cargolists 
+
 def read_data(input_file):
     data = []
     with open(input_file, 'r') as f:
@@ -16,20 +16,20 @@ def read_data(input_file):
                     data.append(t)
     return data
 
-# calculates the kg left in a ship
+
 def kg_left(s):
     return s[4] - sum(item[1] for item in s[3])
 
-# calculates the m3 left in a ship
+
 def m3_left(s):
     return s[5] - sum(item[2] for item in s[3])
 
-# updates the ships information (free space)
+
 def update_ship(s):
     s[1] = kg_left(s)
     s[2] = m3_left(s)
 
-# putting the packages into the spacecrafts with the most free space
+
 def fill_cargo_kg(ships, cargolist):
     # sort cargolist: most kg on top
     cargolist.sort(key=itemgetter(1), reverse=True)
@@ -37,12 +37,14 @@ def fill_cargo_kg(ships, cargolist):
     ships.sort(key=itemgetter(1), reverse=True)
     # Put package with most kg in ships with most kgs left
     for item in cargolist:
+        if item[1] == 11:
+            continue
         print "packing ", item[0], " in ship ",  ships[0][0]
         ships[0][3].append(item)
         update_ship(ships[0])
         ships.sort(key=itemgetter(1), reverse=True)
 
-# if a ship is overloaded, swap two packages to make it fit
+
 def change_cargo(ships):
     # ship iterator
     k = 0
@@ -54,6 +56,8 @@ def change_cargo(ships):
         # cargo iterators
         i, j = 0, 0
         while i < len(ships[-1][3]) and j < len(ships[k][3]):
+            # swap counter
+            swaps = 0
             # difference in kg & m3 for specified cargo
             kg_diff = ships[-1][3][i][1] - ships[k][3][j][1]
             m3_diff = ships[-1][3][i][2] - ships[k][3][j][2]
@@ -64,20 +68,23 @@ def change_cargo(ships):
                 update_ship(ships[-1])
                 update_ship(ships[k])
                 k = 0
+                swaps += 1
                 break
             elif kg_diff < ships[-1][1]:
                 i += 1
             else:
                 j += 1
-        k += 1
+        # if no more possible swaps, go to the  next ship
+        if swaps == 0:
+            k += 1
         ships.sort(key=itemgetter(1), reverse=True)
 
-# print information per ship
+
 def print_ships(ships, cargo=False, errorcheck=False):
     for i in ships:
         print i[0], "\t kg: ", kg_left(i), "\t m3: ", m3_left(i)
         if(cargo):
-            print "cargo: ", i[3], "\n"
+            print "cargo: ", [item[0] for item in i[3]], "\n"
         if(errorcheck):
             print i[1], i[2], "\n"
 
@@ -91,14 +98,15 @@ def main():
              ["Kounotori", 5200, 14.0, [], 5200, 14.0]]
 
     # read data
-    cargolist = read_data("CargoList1.txt")
+    cargolist = read_data("CargoList2.txt")
 
     # distibute cargo
     fill_cargo_kg(ships, cargolist)
+    print_ships(ships)
     change_cargo(ships)
 
     # print result
-    print_ships(ships)
+    print_ships(ships, cargo=True)
 
 if __name__ == "__main__":
     main()
