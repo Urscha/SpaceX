@@ -4,7 +4,7 @@ from operator import itemgetter
 
 #                       _____FUNCTIONS_____
 
-
+# read cargolists 
 def read_data(input_file):
     data = []
     with open(input_file, 'r') as f:
@@ -16,20 +16,20 @@ def read_data(input_file):
                     data.append(t)
     return data
 
-
+# calculates the kg left in a ship
 def kg_left(s):
     return s[4] - sum(item[1] for item in s[3])
 
-
+# calculates the m3 left in a ship
 def m3_left(s):
     return s[5] - sum(item[2] for item in s[3])
 
-
+# updates the ships information (free space)
 def update_ship(s):
     s[1] = kg_left(s)
     s[2] = m3_left(s)
 
-
+# putting the packages into the spacecrafts with the most free space
 def fill_cargo_kg(ships, cargolist):
     # sort cargolist: most kg on top
     cargolist.sort(key=itemgetter(1), reverse=True)
@@ -42,7 +42,7 @@ def fill_cargo_kg(ships, cargolist):
         update_ship(ships[0])
         ships.sort(key=itemgetter(1), reverse=True)
 
-
+# if a ship is overloaded, swap two packages to make it fit
 def change_cargo(ships):
     # ship iterator
     k = 0
@@ -73,7 +73,7 @@ def change_cargo(ships):
         k += 1
         ships.sort(key=itemgetter(1), reverse=True)
 
-
+# print information per ship
 def print_ships(ships, cargo=False, errorcheck=False):
     for i in ships:
         print i[0], "\t kg: ", kg_left(i), "\t m3: ", m3_left(i)
