@@ -102,15 +102,19 @@ def random_swap(ships):
 
 # TODO
 def acceptance_probability(old_cost, new_cost, T):
-    return math.exp((old_cost - new_cost)/T)#2.71828
+    return math.exp((old_cost - new_cost)/T) #2.71828
 
 # TODO
 def simulated_annealing(solution):
+
     old_cost = cost(solution)
     T = 1.0
     T_min = 0.00001
     alpha = 0.9
+    # save the current solution
     new_solution = []
+    # keep track of best solution
+    best_solution = solution
     while T > T_min:
         i = 1
         while i <= 300:
@@ -122,9 +126,19 @@ def simulated_annealing(solution):
                 old_cost = new_cost
             i += 1
         T = T * alpha
-        print ("%.5f" % T), (1-old_cost)
-    return new_solution
-
+        print ("temperature: %.5f" % T)
+        print("lowest cost till now:", cost(best_solution))
+        print("current cost:", cost(new_solution))
+		# check if this solution should be saved as the overall best solution
+        if old_cost < cost(best_solution):
+            print("new save")
+            best_solution = copy.deepcopy(new_solution)
+    if cost(new_solution) < cost(best_solution):
+        print("new solution is better")
+        return new_solution
+    else:
+        print("best solution is better") 
+        return best_solution
 
 def print_ships(ships, score=True, cargo=False, errorcheck=False):
     svalue = 0
