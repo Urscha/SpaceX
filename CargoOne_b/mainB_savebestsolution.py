@@ -5,6 +5,7 @@ import sys
 from operator import itemgetter
 import random
 import copy
+import time
 
 
 # read data with additional values made in excell (ratio )
@@ -95,7 +96,7 @@ def simulated_annealing(solution):
 			ap = acceptance_probability(old_cost, new_cost, T)
 			if ap > round(random.uniform(0.1, 1.0), 10):
 				old_solution = copy.deepcopy(new_solution)
-				old_cost = copy.deepcopy(new_cost)
+				old_cost = cost(old_solution)
 			i += 1
 		T = T * alpha
 		print ("Temperature: %.5f" % T)
@@ -151,8 +152,9 @@ def main():
 	ships = simulated_annealing(ships)
 	print("Ships filled:")
 	print_ships(ships)
-	print 1 - cost(ships)
-
+	print "Score ", 1 - cost(ships)
+	print "Runtime ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":
+	start_time = time.clock()
 	main()
