@@ -127,13 +127,13 @@ def simulated_annealing(solution):
             i += 1
         T = T * alpha
         print ("temperature: %.5f" % T)
-        print("lowest cost till now:", cost(best_solution))
-        print("current cost:", cost(new_solution))
+        print('lowest cost till now:', cost(best_solution))
+        print('current cost:', cost(new_solution))
 		# check if this solution should be saved as the overall best solution
         if old_cost < cost(best_solution):
             print("new save")
             best_solution = copy.deepcopy(new_solution)
-    if cost(new_solution) < cost(best_solution):
+    if cost(best_solution) > cost(new_solution):
         print("new solution is better")
         return new_solution
     else:
