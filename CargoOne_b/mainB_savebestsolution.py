@@ -19,47 +19,18 @@ def read_data(input_file):
 					data.append(t)
 	return data
 
-
 def kg_left(s):
-	return s[5] - sum(item[1] for item in s[4])
+    return s[5] - sum(item[1] for item in s[4])
 
 
 def m3_left(s):
-	return s[6] - sum(item[2] for item in s[4])
+    return s[6] - sum(item[2] for item in s[4])
 
 
 def update_ship(s):
-	s[1] = kg_left(s)
-	s[2] = m3_left(s)
-	#s[3] = float(s[1]) / float(s[2])
-
-
-def which_ship_ratio(ships, item):
-	ratio = item[4]
-	sList = [(i, abs(ships[i][3]-ratio)) for i in range(len(ships))]
-	sList.sort(key=itemgetter(1))
-	for s in sList:
-		if ships[s[0]][1]>item[1] and ships[s[0]][2]>item[2]:
-			return s[0]
-
-	return -1
-
-
-# initiale ships, including their mass/volume ratio
-# NOT USED, DELETE IN FINAL VERSION
-def fill_cargo_ratio(ships, data):
-	# sort packages: highest score on top
-	data.sort(key=itemgetter(4), reverse=True)
-	# put package with highest score in ship with closest kg/m3 ratio
-	for i in data:
-		s = which_ship_ratio(ships, i)
-		if s == -1:
-			continue
-		ships[s][4].append(i)
-		update_ship(ships[s])
-	return ships
-
-
+    s[1] = kg_left(s)
+    s[2] = m3_left(s)
+	
 def fill_cargo_random(ships, data):
 	for i in data:
 		s = random.randint(0,len(ships)-1)
@@ -136,6 +107,7 @@ def simulated_annealing(solution):
 			best_solution = copy.deepcopy(old_solution)
 	return best_solution
 
+# prints ships
 def print_ships(ships, score=True, cargo=False, errorcheck=False):
 	svalue = 0
 	for i in ships:
@@ -149,21 +121,12 @@ def print_ships(ships, score=True, cargo=False, errorcheck=False):
 	if(score):
 		print "average percentage filled: ",100 - svalue/float(len(ships)),"%\n"
 
-
+# prints the cargo that is left
 def print_cargoleft(ships, cargolist):
 	item_left = len(cargolist) - sum(len(ships[i][4]) for i in range(len(ships)))
 	print "Number of items left: ", item_left
 
-
-def mothership():
-	temp = init_ships()
-	total_kg = sum(s[1] for s in temp)
-	total_m3 = sum(s[2] for s in temp)
-	ships = [["Mothership", total_kg, total_m3, 0.0, [], total_kg, total_m3],]
-	update_ship(ships[0])
-	return ships
-
-
+# initializes the ships and data per ship
 def init_ships():
 	ships = [["Cygnus   ", 2000.0, 18.9, 0.0, [], 2000.0, 18.9],
 			 ["Verne_ATV", 2300.0, 13.1, 0.0, [], 2300.0, 13.1],
@@ -177,17 +140,17 @@ def init_ships():
 
 #						   _____MAIN_____
 def main():
-	# initiale ships
+	# initiate ships
 	ships = init_ships()
 	cargolist = read_data("CargoList1_b.txt")
+	print("Empty ships:")
 	print_ships(ships)
 	ships = fill_cargo_random(ships, cargolist)
-	# print ships
+	print("Randomly filled ships:")
 	print_ships(ships)
 	ships = simulated_annealing(ships)
-	#print_cargoleft(ships, cargolist)
-	#update_ship(ships[0])
-	#print_ships(ships)
+	print("Ships filled:")
+	print_ships(ships)
 	print 1 - cost(ships)
 
 
