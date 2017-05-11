@@ -5,7 +5,9 @@ from operator import itemgetter
 
 data = []
 # initialize maximal score
-score = 10786.35
+score = 0
+kgpacked = 0
+m3packed = 0
 
 with open("CargoList1_b.txt", 'r') as f:
     for line in f:
@@ -26,49 +28,42 @@ for i in data:
     if i[4] < 140.7 and (ships[0][1] - i[1]) >= 0 and (ships [0][2] - i[2]) >= 0:
         ships[0][1] -= i[1]
         ships[0][2] -= i[2]
+        kgpacked += i[1]
+        m3packed += i[2]
         print "packing " , i[0] , " in ship " ,  ships[0][0]
     elif i[4] < 223.5 and (ships[1][1] - i[1]) >= 0 and (ships [1][2] - i[2]) >= 0:
         ships[1][1] -= i[1]
         ships[1][2] -= i[2]
+        kgpacked += i[1]
+        m3packed += i[2]
         print "packing " , i[0] , " in ship " ,  ships[1][0]
     elif i[4] < 587.22 and (ships[3][1] - i[1]) >= 0 and (ships [3][2] - i[2]) >= 0:
         ships[3][1] -= i[1]
         ships[3][2] -= i[2]
+        kgpacked += i[1]
+        m3packed += i[2]
         print "packing " , i[0] , " in ship " ,  ships[3][0]
     elif (ships[2][1] - i[1]) >= 0 and (ships [2][2] - i[2]) >= 0:
         ships[2][1] -= i[1]
         ships[2][2] -= i[2]
+        kgpacked += i[1]
+        m3packed += i[2]
         print "packing " , i[0] , " in ship " ,  ships[2][0]
     # see if leftover packages fit in ships
     elif (ships[1][1] - i[1]) >= 0 and (ships [1][2] - i[2]) >= 0:
         ships[1][1] -= i[1]
         ships[1][2] -= i[2]
+        kgpacked += i[1]
+        m3packed += i[2]
         print "packing " , i[0] , " in ship " ,  ships[1][0]
     else:
+        print(i)
         score -= i[3]
         print "could not pack ", i[0]
 
-# TODO :: define score
-def cost(ships):
-	totalkgleft = 0
-	totalm3left = 0
-	for s in ships:
-		s[4].sort(key=itemgetter(4), reverse=True)
-		#print s[4][4]
-		m3left = s[6]
-		kgleft = s[5]
-		for item in s[4]:
-			if (m3left - item[2]) > 0 and (kgleft - item[1]) > 0:
-				m3left -= item[2]
-				kgleft -= item[1]
-		totalkgleft += kgleft
-		totalm3left += m3left
-	return (totalkgleft/11895 + totalm3left/53.6)/2
-
-cost = cost(ships)	
-print(cost)
-		
 # print leftover space in spaceships and score
 for i in ships:
     print i[0], "\t kg: ", i[1], "\t m3: ", i[2] , "\n"
-print "score = ", score, "\n"
+
+score =  ((kgpacked / 11850.0) + (m3packed / 53.6))/ 2
+print "score = ", score * 100, " %\n"

@@ -99,9 +99,9 @@ def simulated_annealing(solution):
 				old_cost = cost(old_solution)
 			i += 1
 		T = T * alpha
-		print ("Temperature: %.5f" % T)
-		print "Overall lowest cost: ", cost(best_solution)
-		print "Current cost: ", old_cost ,"\n"
+		# print ("Temperature: %.5f" % T)
+		# print "Overall lowest cost: ", cost(best_solution)
+		# print "Current cost: ", old_cost ,"\n"
 		# check if this solution should be saved as the overall best solution
 		if old_cost < cost(best_solution):
 			print("Updated best solution \n")
@@ -152,8 +152,8 @@ def main():
 	ships = simulated_annealing(ships)
 	print("Ships filled:")
 	print_ships(ships)
-	print "Score ", 1 - cost(ships)
-	print "Runtime ", time.clock() - start_time, "seconds"
+	print "Score: ", (1 - cost(ships)) * 100, "%"
+	print "Runtime: ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":
 	start_time = time.clock()

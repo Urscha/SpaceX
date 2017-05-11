@@ -5,6 +5,7 @@ import sys
 from operator import itemgetter
 import random
 import copy
+import time
 
 _cWEIGTH = 0 # total cargo weigth
 _cVOLUME = 0 # total cargo volume
@@ -60,6 +61,7 @@ def fill_cargo_random(ships, data):
 
 # Takes all ships and returns average percentage that is not taken
 def cost(ships):
+	print(ships)
 	kgs = sum(item[1] for item in ships[-1][4])
 	m3s = sum(item[2] for item in ships[-1][4])
 	cost = ((_cWEIGTH - kgs)/_sWEIGTH + (_cVOLUME - m3s)/_sVOLUME)/2
@@ -220,7 +222,8 @@ def main():
 	print "cargo in 5th ship: weight =", sum(s[1] for s in ships[-1][4]), ",\tvolume = ",sum(s[2] for s in ships[-1][4])
 	print _cWEIGTH, _cVOLUME, _sWEIGTH, _sVOLUME
 	print 1 - cost(ships)
-
+	print "Runtime ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":
+	start_time = time.clock()
 	main()
