@@ -48,26 +48,6 @@ for i in data:
         score -= i[3]
         print "could not pack ", i[0]
 
-# TODO :: define score
-def cost(ships):
-	totalkgleft = 0
-	totalm3left = 0
-	for s in ships:
-		s[4].sort(key=itemgetter(4), reverse=True)
-		#print s[4][4]
-		m3left = s[6]
-		kgleft = s[5]
-		for item in s[4]:
-			if (m3left - item[2]) > 0 and (kgleft - item[1]) > 0:
-				m3left -= item[2]
-				kgleft -= item[1]
-		totalkgleft += kgleft
-		totalm3left += m3left
-	return (totalkgleft/11895 + totalm3left/53.6)/2
-
-cost = cost(ships)	
-print(cost)
-		
 # print leftover space in spaceships and score
 for i in ships:
     print i[0], "\t kg: ", i[1], "\t m3: ", i[2] , "\n"

@@ -5,6 +5,7 @@ import sys
 from operator import itemgetter
 import random
 import copy
+import time
 
 
 # read data with additional values made in excell (ratio )
@@ -55,6 +56,7 @@ def fill_cargo_random(ships, data):
 
 # Takes all ships and returns average percentage that is not taken
 def cost(ships):
+	print(ships)
 	kgs = sum(item[1] for item in ships[-1][4])
 	m3s = sum(item[2] for item in ships[-1][4])
 	cost = (kgs/11895 + m3s/53.6)/2
@@ -180,7 +182,8 @@ def main():
 	#update_ship(ships[0])
 	print_ships(ships)
 	print 1 - cost(ships)
-
+	print "Runtime ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":
+	start_time = time.clock()
 	main()
