@@ -61,7 +61,6 @@ def fill_cargo_random(ships, data):
 
 # Takes all ships and returns average percentage that is not taken
 def cost(ships):
-	print(ships)
 	kgs = sum(item[1] for item in ships[-1][4])
 	m3s = sum(item[2] for item in ships[-1][4])
 	cost = ((_cWEIGTH - kgs)/_sWEIGTH + (_cVOLUME - m3s)/_sVOLUME)/2
