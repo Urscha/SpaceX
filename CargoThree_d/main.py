@@ -43,8 +43,8 @@ def m3_left(s):
 
 # Takes sigle ship and updates the kg's and m3's that are left
 def update_ship(s):
-    s[1] = kg_left(s)
-    s[2] = m3_left(s)
+    s[KG] = kg_left(s)
+    s[M3] = m3_left(s)
 
 
 # Takes  a ship & item as aguments. Returns True if item fits, else False
