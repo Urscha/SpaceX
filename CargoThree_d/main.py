@@ -12,6 +12,8 @@ _TOTAL_CARGO_VOLUME = 0 # total cargo volume
 _TOTAL_SHIPS_WEIGTH = 0 # total ships weight
 _TOTAL_SHIPS_VOLUME = 0 # total ships volume
 
+NAME, KG, M3, RATIO, CARGO = 0, 1, 2, 3, 4
+
 # read data with additional values made in excell (ratio )
 def read_data(input_file):
     global _TOTAL_CARGO_WEIGTH, _TOTAL_CARGO_VOLUME
@@ -26,17 +28,17 @@ def read_data(input_file):
                     m3 = float(i[l+2])
                     ratio = kg/m3
                     data.append((index, kg, m3, ratio))
-    _TOTAL_CARGO_WEIGTH = sum(item[1] for item in data)
-    _TOTAL_CARGO_VOLUME = sum(item[2] for item in data)
+    _TOTAL_CARGO_WEIGTH = sum(item[KG] for item in data)
+    _TOTAL_CARGO_VOLUME = sum(item[M3] for item in data)
     return data
 
 
 def kg_left(s):
-    return s[5] - sum(item[1] for item in s[4])
+    return s[5] - sum(item[KG] for item in s[CARGO])
 
 
 def m3_left(s):
-    return s[6] - sum(item[2] for item in s[4])
+    return s[6] - sum(item[M3] for item in s[CARGO])
 
 
 # Takes sigle ship and updates the kg's and m3's that are left
@@ -47,7 +49,7 @@ def update_ship(s):
 
 # Takes  a ship & item as aguments. Returns True if item fits, else False
 def fits(ship, item):
-    return (ship[1] - item[1] >= 0 and ship[2] - item[2] >= 0)
+    return (ship[KG] - item[KG] >= 0 and ship[M3] - item[M3] >= 0)
 
 
 # First only the ships with an extreme ratio of kg/m3
@@ -61,30 +63,33 @@ def fill_cargo_random(ships, data):
     for i in data:
         s = random.randint(0,len(ships) - 2)
         if fits(ships[s], i):
-            ships[s][4].append(i)
+            ships[s][CARGO].append(i)
             update_ship(ships[s])
         else:
-            ships[-1][4].append(i)
+            ships[-1][CARGO].append(i)
 
 
 # Takes all ships and returns average percentage that is not taken
 def cost(ships):
-    kgs = sum(item[1] for item in ships[-1][4])
-    m3s = sum(item[2] for item in ships[-1][4])
-    cost = ((_TOTAL_CARGO_WEIGTH - kgs)/_TOTAL_SHIPS_WEIGTH + (_TOTAL_CARGO_VOLUME - m3s)/_TOTAL_SHIPS_VOLUME)/2
-    return 1 - cost
+    kgs_left = sum(item[KG] for item in ships[-1][CARGO])
+    m3s_left = sum(item[M3] for item in ships[-1][CARGO])
+    percentage_kg_filled = (_TOTAL_CARGO_WEIGTH - kgs_left)/_TOTAL_SHIPS_WEIGTH
+    percentage_m3_filled = (_TOTAL_CARGO_VOLUME - m3s_left)/_TOTAL_SHIPS_VOLUME
+    profit = ( percentage_kg_filled + percentage_m3_filled ) / 2
+    cost = 1 - profit
+    return cost
 
 
 def random_swap(ships):
     # move items from ship A to cargo
     s1 = random.randint(0,len(ships)-2)
-    l = len(ships[s1][4]) - 1
+    l = len(ships[s1][CARGO]) - 1
     weigth = 0
     while weigth < 0.02 and l > 1:
         item = random.randint(0,l)
-        ships[-1][4].append(ships[s1][4][item])
-        weigth += (ships[s1][4][item][1]/11895 + ships[s1][4][item][2]/53.6)/2
-        del ships[s1][4][item]
+        ships[-1][CARGO].append(ships[s1][CARGO][item])
+        weigth += (ships[s1][CARGO][item][KG]/11895 + ships[s1][CARGO][item][M3]/53.6)/2
+        del ships[s1][CARGO][item]
         l -= 1
 
     update_ship(ships[s1])
@@ -94,12 +99,12 @@ def random_swap(ships):
     while s2 == s1:
         s2 = random.randint(0,len(ships)-2)
     counter = 0
-    l = len(ships[s2][4]) - 1
+    l = len(ships[s2][CARGO]) - 1
     while counter < 5 and l > 1:
         item = random.randint(0,l)
-        if fits(ships[s1], ships[s2][4][item]):
-            ships[s1][4].append(ships[s2][4][item])
-            del ships[s2][4][item]
+        if fits(ships[s1], ships[s2][CARGO][item]):
+            ships[s1][CARGO].append(ships[s2][CARGO][item])
+            del ships[s2][CARGO][item]
             update_ship(ships[s1])
             l -= 1
         else:
@@ -107,12 +112,12 @@ def random_swap(ships):
 
     # move items from cargo to ship B
     counter = 0
-    l = len(ships[-1][4]) - 1
+    l = len(ships[-1][CARGO]) - 1
     while counter < 5 and l > 1:
         item = random.randint(0,l)
-        if fits(ships[s2], ships[-1][4][item]):
-            ships[s2][4].append(ships[-1][4][item])
-            del ships[-1][4][item]
+        if fits(ships[s2], ships[-1][CARGO][item]):
+            ships[s2][CARGO].append(ships[-1][CARGO][item])
+            del ships[-1][CARGO][item]
             l -= 1
             update_ship(ships[s2])
         else:
@@ -160,22 +165,15 @@ def simulated_annealing(solution):
     return best_solution
 
 
-def print_ships(ships, score=False, cargo=False, errorcheck=False):
+def print_ships(ships):
     svalue = 0
-    for i in ships:
-        print i[0],"item: ", len(i[4]), "\t kg: ", kg_left(i), "\t m3: ", m3_left(i)
-        if(cargo):
-            print "cargo: ", i[3], "\n"
-        if(errorcheck):
-            print i[1], i[2], "\n"
-        if(score):
-            svalue += (i[1]/i[5] + i[2]/i[6])*(100/2)
-    if(score):
-        print "average percentage filled: ",100 - svalue/float(len(ships)),"%\n"
+    for s in ships:
+        print s[NAME],"item: ", len(s[CARGO]), "\t kg: ", kg_left(s), "\t m3: ", m3_left(s)
+
 
 
 def print_cargoleft(ships, cargolist):
-    item_left = len(cargolist) - sum(len(ships[i][4]) for i in range(len(ships)))
+    item_left = len(cargolist) - sum(len(ships[i][CARGO]) for i in range(len(ships)))
     print "Number of items left: ", item_left
 
 
@@ -206,8 +204,8 @@ def init_ships():
     ships.append(Cargo)
     for s in ships:
         update_ship(s)
-    _TOTAL_SHIPS_WEIGTH = sum(s[1] for s in ships[0:-1])
-    _TOTAL_SHIPS_VOLUME = sum(s[2] for s in ships[0:-1])
+    _TOTAL_SHIPS_WEIGTH = sum(s[KG] for s in ships[0:-1])
+    _TOTAL_SHIPS_VOLUME = sum(s[M3] for s in ships[0:-1])
     return ships
 
 #                           _____MAIN_____
