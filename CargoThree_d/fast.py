@@ -26,7 +26,7 @@ def read_data(input_file):
                     index = int(i[l])
                     kg = float(i[l+1])
                     m3 = float(i[l+2])
-                    ratio = kg/m3
+                    ratio = int(kg/m3)
                     data.append((index, kg, m3, ratio))
     TOTAL_CARGO_WEIGTH = sum(item[KG] for item in data)
     TOTAL_CARGO_VOLUME = sum(item[M3] for item in data)
@@ -83,11 +83,11 @@ def cost(ships):
 # IMPORTANT: if swap is rejected, reverse with "direction = -1"
 def update_swap(ships, swap, direction = 1):
     A, B, item = swap# item from ship A to B
-    print A, B, item
-    ships[A][KG] -= direction * item[KG]
-    ships[A][M3] -= direction * item[M3]
-    ships[B][KG] += direction * item[KG]
-    ships[B][M3] += direction * item[M3]
+    #print A, B, item
+    ships[A][KG] += direction * item[KG]
+    ships[A][M3] += direction * item[M3]
+    ships[B][KG] -= direction * item[KG]
+    ships[B][M3] -= direction * item[M3]
 
 def reverse_swaps(ships, swaps):
     for swap in swaps:
@@ -96,7 +96,8 @@ def reverse_swaps(ships, swaps):
 
 # update cargolists if swap is accepted
 def keep_swaps(ships, swaps):
-    for A, B, (item) in swaps: # item from ship A to B
+    for A, B, item in swaps: # item from ship A to B
+        print "item=" ,A,B,item
         ships[A][CARGO].remove(item)
         ships[B][CARGO].append(item)
 
@@ -114,7 +115,7 @@ def random_swap(ships):
     l = len(ships[s1][CARGO]) - 1
     weight = 0 #
     used_items = []
-    while weight < .02 and l - len(used_items) > 1:
+    while weight < 2e-3 and l - len(used_items) > 1:
         # find item that's not swapped
         item = random.randint(0,l)
         while item in used_items:
@@ -128,7 +129,6 @@ def random_swap(ships):
         swap = (s1, -1, ships[s1][CARGO][item])
         swap_list.append(swap)
         update_swap(ships, swap)
-
 
     # move items from ship B to ship A
     s2 = random.randint(0,len(ships)-2)
@@ -187,7 +187,7 @@ def simulated_annealing(solution):
 
     while T > T_min:
         i = 1
-        while i <= 1000:
+        while i <= 10:
             print "1",cost(solution), old_cost
             swap_list = random_swap(solution)
             new_cost = cost(solution)
@@ -196,6 +196,7 @@ def simulated_annealing(solution):
             # if ap > round(random.uniform(0.1, 1.0), 10):
             if new_cost < old_cost:
                 old_cost = new_cost
+                print "3", swap_list
                 keep_swaps(solution, swap_list)
             else:
                 reverse_swaps(solution, swap_list)
