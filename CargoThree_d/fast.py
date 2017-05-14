@@ -97,7 +97,7 @@ def reverse_swaps(ships, swaps):
 # update cargolists if swap is accepted
 def keep_swaps(ships, swaps):
     for A, B, item in swaps: # item from ship A to B
-        print "item=" ,A,B,item
+        # print "item=" ,A,B,item
         ships[A][CARGO].remove(item)
         ships[B][CARGO].append(item)
 
@@ -115,7 +115,7 @@ def random_swap(ships):
     l = len(ships[s1][CARGO]) - 1
     weight = 0 #
     used_items = []
-    while weight < 2e-3 and l - len(used_items) > 1:
+    while weight < 1e-2 and l - len(used_items) > 1:
         # find item that's not swapped
         item = random.randint(0,l)
         while item in used_items:
@@ -137,7 +137,7 @@ def random_swap(ships):
         s2 = random.randint(0,len(ships)-2)
     counter = 0
     l = len(ships[s2][CARGO]) - 1
-    while counter < 5 and l - len(used_items) > 1:
+    while counter < 10 and l - len(used_items) > 1:
         # find item that's not swapped
         item = random.randint(0,l)
         while item in used_items:
@@ -155,7 +155,7 @@ def random_swap(ships):
     counter = 0
     l = len(ships[-1][CARGO]) - 1
     used_items = []
-    while counter < 5 and l -len(used_items) > 1:
+    while counter < 10 and l -len(used_items) > 1:
         # find item that's not swapped
         item = random.randint(0,l)
         while item in used_items:
@@ -177,7 +177,7 @@ def acceptance_probability(old_cost, new_cost, T):
     return math.exp((old_cost - new_cost)/T)
 
 # simulated annealing
-def simulated_annealing(solution):
+def simulated_annealing(solution, hillclimber = True):
     # initialize variables for annealing
     T = 1.0
     T_min = 0.00001
@@ -187,19 +187,22 @@ def simulated_annealing(solution):
 
     while T > T_min:
         i = 1
-        while i <= 10:
-            print "1",cost(solution), old_cost
+        while i <= 1000:
             swap_list = random_swap(solution)
             new_cost = cost(solution)
-            print "2",new_cost, old_cost
-            # ap = acceptance_probability(old_cost, new_cost, T)
-            # if ap > round(random.uniform(0.1, 1.0), 10):
-            if new_cost < old_cost:
-                old_cost = new_cost
-                print "3", swap_list
-                keep_swaps(solution, swap_list)
+            if(hillclimber):
+                if new_cost < old_cost:
+                    old_cost = new_cost
+                    keep_swaps(solution, swap_list)
+                else:
+                    reverse_swaps(solution, swap_list)
             else:
-                reverse_swaps(solution, swap_list)
+                ap = acceptance_probability(old_cost, new_cost, T)
+                if ap > round(random.uniform(0.1, 1.0), 10):
+                    old_cost = new_cost
+                    keep_swaps(solution, swap_list)
+                else:
+                    reverse_swaps(solution, swap_list)
             i += 1
         T = T * alpha
 
@@ -210,7 +213,6 @@ def simulated_annealing(solution):
         if old_cost < cost(best_solution):
             print("Updated best solution \n")
             best_solution = copy.deepcopy(solution)
-            keep_swaps(best_solution, swap_list)
 
     solution = best_solution
     return solution
@@ -273,7 +275,7 @@ def main():
     #print_cargoleft(ships, cargolist)
     #update_ship(ships[0])
     print_ships(ships)
-    print "cargo in 5th ship: weight =", sum(s[1] for s in ships[-1][4]), ",\tvolume = ",sum(s[2] for s in ships[-1][4])
+    print "cargo in 5th ship: weight =", sum(item[KG] for item in ships[-1][CARGO]), ",\tvolume = ",sum(item[M3] for item in ships[-1][CARGO])
     print TOTAL_CARGO_WEIGTH, TOTAL_CARGO_VOLUME, TOTAL_SHIPS_WEIGTH, TOTAL_SHIPS_VOLUME
     print 1 - cost(ships)
     print "Runtime ", time.clock() - start_time, "seconds"
