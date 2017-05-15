@@ -41,7 +41,7 @@ def m3_left(s):
     return s[6] - sum(item[M3] for item in s[CARGO])
 
 
-# Takes sigle ship and updates the kg's and m3's that are left
+# update weight and volume left in ship
 def update_ship(s):
     s[KG] = kg_left(s)
     s[M3] = m3_left(s)
@@ -105,7 +105,8 @@ def random_swap(ships):
 
     # keeps track of swaps for efficiency (preventing any deepcopy)
     # this function will make things look more messy and errorprone, but will
-    # boost the efficiency from O(..) to O(..). This efficiency implementation
+    # boost the efficiency of the hillclimber from O(n^2) to O(n).
+    # This efficiency implementation
     # comes together with update_swap() and swap_cost().
     swap = () # (from ship A, to ship B, item)
     swap_list = [] # list of swaps
