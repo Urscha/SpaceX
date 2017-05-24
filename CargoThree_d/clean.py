@@ -178,7 +178,7 @@ def hillclimber(solution, runs = 1e4):
             if new_cost < old_cost:
                 old_cost = new_cost
                 keep_swaps(solution, swap_list)
-            else:
+            else:cle
                 reverse_swaps(solution, swap_list)
             print "Cost:", old_cost
     return solution
