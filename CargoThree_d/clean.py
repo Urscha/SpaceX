@@ -41,8 +41,10 @@ def read_data(input_file, data):
 
 # update weight and volume left in ship
 def update_ship(s):
-    s[KG] = s[5] - sum(item[KG] for item in s[CARGO])
-    s[M3] = s[6] - sum(item[M3] for item in s[CARGO])
+    s[KG] = s[SIZE_KG] - sum(item[KG] for item in s[CARGO])
+    s[M3] = s[SIZE_M3] - sum(item[M3] for item in s[CARGO])
+    if s[M3] != 0:
+        s[RATIO] = int(s[KG]/s[M3])
 
 
 # returns true if item fits in ship
@@ -52,8 +54,8 @@ def fits(ship, item):
 
 # fills ships on ratio
 def fill_ships_with_extreme_ratio(ships, data):
-    data.sort(key=itemgetter(3), reverse=True) # most ratio on top
-    ships[0:-1].sort(key=itemgetter(3), reverse=True)
+    data.sort(key=itemgetter(RATIO), reverse=True) # most ratio on top
+    ships[0:-1].sort(key=itemgetter(RATIO), reverse=True)
     temp = copy.deepcopy(data)
     boolian = 0
     for item in temp:
@@ -63,8 +65,8 @@ def fill_ships_with_extreme_ratio(ships, data):
                 data.remove(item)
                 update_ship(ship)
                 break
-        data.sort(key=itemgetter(3), reverse=(boolian%2))
-        ships[0:-1].sort(key=itemgetter(3), reverse=(boolian%2))
+        data.sort(key=itemgetter(RATIO), reverse=(boolian%2))
+        ships[0:-1].sort(key=itemgetter(RATIO), reverse=(boolian%2))
         boolian += 1
 
 
@@ -178,10 +180,11 @@ def hillclimber(solution, runs = 1e4):
             if new_cost < old_cost:
                 old_cost = new_cost
                 keep_swaps(solution, swap_list)
-            else:cle
+            else:
                 reverse_swaps(solution, swap_list)
             print "Cost:", old_cost
     return solution
+
 
 def print_ships(ships):
     for s in ships:
@@ -241,12 +244,10 @@ def main():
     init_ships(ships)
 
     fill_ships_with_extreme_ratio(ships, cargolist)
-    fill_cargo_random(ships, cargolist)
-    simulated_annealing(ships)
+    # fill_cargo_random(ships, cargolist)
+    # simulated_annealing(ships)
 
-    for i in range(3):
-        hillclimber(ships)
-        fill_again(ships)
+    hillclimber(ships, 1e6)
 
 
     print_ships(ships)
