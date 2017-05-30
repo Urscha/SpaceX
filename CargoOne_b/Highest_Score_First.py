@@ -74,7 +74,9 @@ def fill_cargo(data, ships):
 def print_ships(ships):
 	for i in ships:
 		print i[NAME], "\t kg: ", i[KG], "\t m3: ", i[M3] , "\n"
-	score =  ((kgpacked / total_weight_cargo) + (m3packed / total_volume_payload))/ 2
+	print(kgpacked)
+	print(m3packed)
+	score =  ((kgpacked / total_weight_cargo) + (m3packed / total_volume_payload)) / 2
 	print "score = ", score * 100, " %\n"
 
 #						   _____MAIN_____
