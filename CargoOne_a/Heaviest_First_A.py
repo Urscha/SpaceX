@@ -2,7 +2,6 @@
 This is the constructive algorithm 'Heaviest First' to solve problem A of the Space Freight case
 By team SpaceX: Rico, Ellen, Urscha
 '''
-
 import math
 import sys
 from operator import itemgetter
