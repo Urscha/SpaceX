@@ -143,33 +143,19 @@ def random_swap(ships):
 
 	return swap_list
 
-# simulated annealing
-def simulated_annealing(solution, runs = 1e2):
-	T, T_min, alpha = 1.0, 1e-4, .9 # SA variables
 
-	old_cost = cost(solution)
-	best_cost = old_cost
-	best_solution = copy.deepcopy(solution)
-
-	while T > T_min: # SA
-		for i in range(int(runs)):
+# hillclimber
+def hillclimber(solution, runs = 1e4):
+	old_cost = cost(solution) # current cost
+	for i in range(int(runs)):
 			swap_list = random_swap(solution)
 			new_cost = cost(solution)
-			ap = math.exp((old_cost - new_cost)/T) # acceptance probability
-			if ap > round(random.uniform(0.1, 1.0), 10):
+			if new_cost < old_cost:
 				old_cost = new_cost
 				keep_swaps(solution, swap_list)
 			else:
 				reverse_swaps(solution, swap_list)
-		T = T * alpha
-
-		if old_cost < best_cost:  # find best solution
-			best_solution = copy.deepcopy(solution)
-			best_cost = old_cost
-
-		print "Best cost:", best_cost, "\nCurrent cost:", old_cost
-
-	solution = best_solution
+			print "Cost:", old_cost
 	return solution
 
 
@@ -181,15 +167,6 @@ def print_ships(ships):
 def print_cargoleft(ships, cargolist):
 	item_left = len(cargolist) - sum(len(ships[i][CARGO]) for i in range(len(ships)))
 	print "Number of items left: ", item_left
-
-
-# make of initialized ships one big ship
-def mothership(ships):
-	ships = [["Mothership", SHIPS_KG, SHIPS_M3, 0.0, [], SHIPS_KG, SHIPS_M3],
-			 ["cargo	 ", CARGO_KG, CARGO_M3, 0.0, [], CARGO_KG, CARGO_M3]]
-	for ship in ships:
-		update_ship(ship)
-	return ships
 
 
 def init_ships(ships):
@@ -219,18 +196,16 @@ def fill_again(ships):
 				break
 	return ships
 
-
 #						   _____MAIN_____
 def main():
 	ships, cargolist = [], []
 	read_data("CargoList1.txt", cargolist)
 	init_ships(ships)
-
 	fill_ships_with_extreme_ratio(ships, cargolist)
-	simulated_annealing(ships)
+	hillclimber(ships)
 
 	print_ships(ships)
-	print sum(len(ship[CARGO]) for ship in ships )
+	print sum(len(ship[CARGO]) for ship in ships)
 	print "cargo in 5th ship: weight =", sum(item[KG] for item in ships[-1][CARGO]), ",\tvolume = ",sum(item[M3] for item in ships[-1][CARGO])
 	print CARGO_KG, CARGO_M3, SHIPS_KG, SHIPS_M3
 	score1 = ((ships[-1][KG] / CARGO_KG) + (ships[-1][M3] / SHIPS_M3)) /2
