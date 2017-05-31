@@ -196,42 +196,43 @@ def simulated_annealing(solution, runs = 1e2, addshipthreshold = 1e4):
 	# add ship if first run
 	if len(solution) == 1:
 		add_ship(solution)
+		add_ship(solution)
 		
-    T, T_min, alpha = 1.0, 1e-5, .9 # SA variables
+	T, T_min, alpha = 1.0, 1e-5, .9 # SA variables
 
-    old_cost = cost(solution)
-    best_cost = old_cost
-    best_solution = copy.deepcopy(solution)
-    counter = 0
-    while solution[-1][CARGO]: # SA
-        for i in range(int(runs)):
-            swap_list = random_swap(solution)
-            new_cost = cost(solution)
-            ap = math.exp((old_cost - new_cost)/T) # acceptance probability
-            if ap > round(random.uniform(0.1, 1.0), 10):
-                old_cost = new_cost
-                keep_swaps(solution, swap_list)
-                counter = 0
-            else:
-                reverse_swaps(solution, swap_list)
-                counter += 1
-            if counter > addshipthreshold:
-                solution = add_ship(solution)
-                counter = 0
-                simulated_annealing(solution)
-                old_cost = cost(solution)
-                break
-        if T > T_min:
-            T = T * alpha
+	old_cost = cost(solution)
+	best_cost = old_cost
+	best_solution = copy.deepcopy(solution)
+	counter = 0
+	while solution[-1][CARGO]: # SA
+		for i in range(int(runs)):
+			swap_list = random_swap(solution)
+			new_cost = cost(solution)
+			ap = math.exp((old_cost - new_cost)/T) # acceptance probability
+			if ap > round(random.uniform(0.1, 1.0), 10):
+				old_cost = new_cost
+				keep_swaps(solution, swap_list)
+				counter = 0
+			else:
+				reverse_swaps(solution, swap_list)
+				counter += 1
+			if counter > addshipthreshold:
+				solution = add_ship(solution)
+				counter = 0
+				simulated_annealing(solution)
+				old_cost = cost(solution)
+				break
+		if T > T_min:
+			T = T * alpha
 
-        if old_cost < best_cost:  # find best solution
-            best_solution = copy.deepcopy(solution)
-            best_cost = old_cost
+		if old_cost < best_cost:  # find best solution
+			best_solution = copy.deepcopy(solution)
+			best_cost = old_cost
 
-        print "ships:", len(solution)-1, "filled:","%0.2f" % ((1 - old_cost)*100), "%", "items left: ", len(solution[-1][CARGO])
+		print "ships:", len(solution)-1, "filled:","%0.2f" % ((1 - old_cost)*100), "%", "items left: ", len(solution[-1][CARGO])
 
-    solution = best_solution
-    return solution
+	solution = best_solution
+	return solution
 
 def print_ships(ships):
 	for s in ships:

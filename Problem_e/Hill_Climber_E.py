@@ -160,7 +160,7 @@ def random_swap(ships):
 	return swap_list
 
 
-# add ship to ships
+# add ship to ships with best ratio
 def add_ship(solution):
 	global SHIPS_KG, SHIPS_M3
 	weight_left = sum(item[KG] for item in solution[-1][CARGO])
@@ -225,10 +225,12 @@ def print_ships(ships):
 def init_ships(ships, cargo):
 	global SHIPS_KG, SHIPS_M3
 	ships.append(["cargo", CARGO_KG, CARGO_M3, 0.0, [], CARGO_KG, CARGO_M3])
+	# add all cargo to ship
 	ships[0][4] = cargo
 	weight_left = sum(item[KG] for item in ships[-1][CARGO])
 	volume_left = sum(item[M3] for item in ships[-1][CARGO])
 	ratio_left = weight_left / volume_left
+	# put ratio as value in ship
 	ships[0][3] = ratio_left
 	SHIPS_KG = sum(s[KG] for s in ships[0:-1])
 	SHIPS_M3 = sum(s[M3] for s in ships[0:-1])
