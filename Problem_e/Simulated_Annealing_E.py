@@ -166,7 +166,6 @@ def add_ship(solution):
 	weight_left = sum(item[KG] for item in solution[-1][CARGO])
 	volume_left = sum(item[M3] for item in solution[-1][CARGO])
 	ratio_left = weight_left / volume_left
-	print(ratio_left)
 	for ship in available_ships:
 		if weight_left <= ship[KG] and volume_left <= ship[M3]:
 			temp = copy.deepcopy(ship)
