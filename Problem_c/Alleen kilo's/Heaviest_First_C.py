@@ -44,6 +44,7 @@ def fill_cargo_kg(ships, cargolist):
     ships.sort(key=itemgetter(KG), reverse=True)
     # Put package with most kg in ships with most kgs left
     for item in cargolist:
+		# skip the lightest package
         if item[1] == 11:
             continue
         print "packing ", item[NAME], " in ship ",  ships[0][NAME]
