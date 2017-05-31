@@ -77,7 +77,7 @@ def print_ships(ships):
 	print(kgpacked)
 	print(m3packed)
 	score =  ((kgpacked / total_weight_payload) + (m3packed / total_volume_payload)) / 2
-	print "score = ", score * 100, " %\n"
+	print "Score = ", score * 100, " %\n"
 
 #						   _____MAIN_____
 def main():

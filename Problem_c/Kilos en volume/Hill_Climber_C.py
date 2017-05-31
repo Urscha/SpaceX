@@ -206,8 +206,8 @@ def main():
 
 	print_ships(ships)
 	print "cargo in 5th ship: weight =", sum(item[KG] for item in ships[-1][CARGO]), ",\tvolume = ",sum(item[M3] for item in ships[-1][CARGO])
-	score1 = ((ships[-1][KG] / SHIPS_KG) + (ships[-1][M3] / SHIPS_M3)) /2
-	print "Score: ", score1
+	score1 = ((ships[-1][KG] / SHIPS_KG) + (ships[-1][M3] / SHIPS_M3)) /2 * 100
+	print "Score: ", score1, "%"
 	print "Runtime ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":

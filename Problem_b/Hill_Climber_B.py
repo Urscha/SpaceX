@@ -1,5 +1,5 @@
 '''
-This is the simulated annealing algorithm to solve problemB of the Space Freight case
+This is the Hill Climber algorithm to solve problem B of the Space Freight case
 By team SpaceX: Rico, Ellen, Urscha
 '''
 import math
@@ -207,9 +207,8 @@ def main():
 	print_ships(ships)
 	print sum(len(ship[CARGO]) for ship in ships)
 	print "cargo in 5th ship: weight =", sum(item[KG] for item in ships[-1][CARGO]), ",\tvolume = ",sum(item[M3] for item in ships[-1][CARGO])
-	print CARGO_KG, CARGO_M3, SHIPS_KG, SHIPS_M3
-	score1 = ((ships[-1][KG] / CARGO_KG) + (ships[-1][M3] / SHIPS_M3)) /2
-	print score1
+	score1 = ((ships[-1][KG] / CARGO_KG) + (ships[-1][M3] / SHIPS_M3)) /2 * 100
+	print "Score: ", score1, "%"
 	print "Runtime ", time.clock() - start_time, "seconds"
 
 if __name__ == "__main__":
