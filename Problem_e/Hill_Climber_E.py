@@ -12,9 +12,9 @@ NAME, KG, M3, RATIO, CARGO, SIZE_KG, SIZE_M3 = 0, 1, 2, 3, 4, 5, 6
 
 
 # available ships
-available_ships =  [["Cygnus   ", 2000.0, 18.9, 0.0, [], 2000.0, 18.9, 0],
+available_ships =  [["Progress ", 2400.0,  7.6, 0.0, [], 2400.0,  7.6, 0],
 					["Verne_ATV", 2300.0, 13.1, 0.0, [], 2300.0, 13.1, 0],
-					["Progress ", 2400.0,  7.6, 0.0, [], 2400.0,  7.6, 0],
+					["Cygnus   ", 2000.0, 18.9, 0.0, [], 2000.0, 18.9, 0],
 					["Kounotori", 5200.0, 14.0, 0.0, [], 5200.0, 14.0, 0],
 					["ThianZhou", 6500.0, 15.0, 0.0, [], 6500.0, 15.0, 0],
 					["Dragon   ", 3400.0, 42.0, 0.0, [], 3400.0, 42.0, 0]]
@@ -160,7 +160,7 @@ def random_swap(ships):
 	return swap_list
 
 
-# add ship to ships with best ratio
+# add ship to ships
 def add_ship(solution):
 	global SHIPS_KG, SHIPS_M3
 	weight_left = sum(item[KG] for item in solution[-1][CARGO])
@@ -192,9 +192,9 @@ def add_ship(solution):
 	return solution
 
 # hillclimber
-def hillclimber(solution, runs = 1e4):
+def hillclimber(solution, runs = 1e3):
 	# add ship if first run
-	if len(solution) == 1:
+	while len(solution) < 3:
 		add_ship(solution)
 	old_cost = cost(solution) # current cost
 	counter = 0
@@ -209,7 +209,11 @@ def hillclimber(solution, runs = 1e4):
 				reverse_swaps(solution, swap_list)
 				counter += 1
 			print "ships:", len(solution)-1, "filled:","%0.2f" % ((1 - old_cost)*100), "%", "items left: ", len(solution[-1][CARGO])
-			if counter > runs:
+			if len(solution[-1][CARGO]) < 100:
+				runs = 1e4
+			if len(solution[-1][CARGO]) < 30:
+				runs = 1e5
+			if counter > (runs):# - len(solution[-1][CARGO])*5):
 				solution = add_ship(solution)
 				counter = 0
 				hillclimber(solution)
@@ -225,12 +229,10 @@ def print_ships(ships):
 def init_ships(ships, cargo):
 	global SHIPS_KG, SHIPS_M3
 	ships.append(["cargo", CARGO_KG, CARGO_M3, 0.0, [], CARGO_KG, CARGO_M3])
-	# add all cargo to ship
 	ships[0][4] = cargo
 	weight_left = sum(item[KG] for item in ships[-1][CARGO])
 	volume_left = sum(item[M3] for item in ships[-1][CARGO])
 	ratio_left = weight_left / volume_left
-	# put ratio as value in ship
 	ships[0][3] = ratio_left
 	SHIPS_KG = sum(s[KG] for s in ships[0:-1])
 	SHIPS_M3 = sum(s[M3] for s in ships[0:-1])
